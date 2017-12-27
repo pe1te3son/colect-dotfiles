@@ -12,7 +12,7 @@ settings = None
 with open(path.join(path.dirname(path.realpath(__file__)), 'settings.json'), 'r') as f:
     settings = json.load(f)
 
-def colect_configs():
+def export_configs():
     dest = create_config_dir(settings['dest_dir'])
     file_to_colect = settings['colect_files']
     for conf in file_to_colect:
@@ -43,4 +43,4 @@ def create_config_dir(dest_dir):
     return dest;
 
 
-colect_configs()
+export_configs()
