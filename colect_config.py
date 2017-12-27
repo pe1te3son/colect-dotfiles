@@ -19,7 +19,7 @@ config_files = [
             ['.config/conky_widgets/conky_vim_shortcuts', 'conky_vim_shortcuts', 'conky_widgets'],
             ['.config/conky_widgets/shortcuts_maia', 'shortcuts_maia', 'conky_widgets'],
             ['.config/conky_widgets/conky_maia', 'conky_maia', 'conky_widgets'],
-            ['Scripts/conkymac.sh', 'conkymac.sh', 'scripts']
+            ['Scripts/my_conky', 'my_conky', 'scripts']
         ]
 
 def colect_configs():
