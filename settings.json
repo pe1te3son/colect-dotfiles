@@ -1,0 +1,14 @@
+{
+	"dest_dir":"Documents/dotfiles-colector",
+	"colect_files": [
+            [".config/i3/config", "i3_config"],
+            [".config/i3status/config", "i3status_config"],
+            [".Xresources", "xresources"],
+            [".config/conky_widgets/conky_vim_shortcuts", "conky_vim_shortcuts", "conky_widgets"],
+            [".config/conky_widgets/shortcuts_maia", "shortcuts_maia", "conky_widgets"],
+            [".config/conky_widgets/conky_maia", "conky_maia", "conky_widgets"],
+            ["Scripts/my_conky", "my_conky", "scripts"],
+            [".peter", "peter"],
+            [".config/NOTES.txt", "notes.txt"]
+	]
+}

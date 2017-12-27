@@ -4,28 +4,18 @@ from pathlib import Path
 from shutil import copyfile
 from socket import gethostname
 from os import makedirs, path
-
+import json
 home = str(Path.home())
 
-settings = {
-            'dest_dir':'Documents'
-        }
+settings = None
 
-# src dest optional_folder
-config_files = [
-            ['.config/i3/config', 'i3_config'],
-            ['.config/i3status/config', 'i3status_config'],
-            ['.Xresources', 'xresources'],
-            ['.config/conky_widgets/conky_vim_shortcuts', 'conky_vim_shortcuts', 'conky_widgets'],
-            ['.config/conky_widgets/shortcuts_maia', 'shortcuts_maia', 'conky_widgets'],
-            ['.config/conky_widgets/conky_maia', 'conky_maia', 'conky_widgets'],
-            ['Scripts/my_conky', 'my_conky', 'scripts']
-        ]
+with open(path.join(path.dirname(path.realpath(__file__)), 'settings.json'), 'r') as f:
+    settings = json.load(f)
 
 def colect_configs():
     dest = create_config_dir(settings['dest_dir'])
-
-    for conf in config_files:
+    file_to_colect = settings['colect_files']
+    for conf in file_to_colect:
         if len(conf) > 2:
             opt_dir = create_optional_dir(dest, conf[2])
             copyfile(path.join( home, conf[0]), path.join(opt_dir, conf[1]))
