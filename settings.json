@@ -9,6 +9,7 @@
             [".config/conky_widgets/conky_maia", "conky_maia", "conky_widgets"],
             ["Scripts/my_conky", "my_conky", "scripts"],
             [".peter", "peter"],
+	    [".vimrc", "vimrc"],
             [".config/NOTES.txt", "notes.txt"]
 	]
 }
