@@ -1,0 +1,7 @@
+{
+	"dest_dir":"Documents/dotfiles-colector",
+	"colect_files": [
+	    // path to config, file name to copy to, (optional) subfolder name
+            [".config/i3/config", "i3_config", "i3_dir_settings"]
+	]
+}
