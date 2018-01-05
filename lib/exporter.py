@@ -1,15 +1,14 @@
 #!python3
-from sys import argv, exit
+from sys import exit
 from pathlib import Path
 from shutil import copyfile
 from socket import gethostname
 from os import makedirs, path
 import json
 
-args = argv[1:]
 
-def export_configs():
-    settings = get_config_file(args[0])
+def export_configs(path_to_config_file, show_select_menu=False):
+    settings = get_config_file(path_to_config_file)
     home = str(Path.home())
     dest = create_config_dir(settings['dest_dir'])
     file_to_colect = settings['colect_files']
@@ -30,6 +29,7 @@ def get_config_file(path_to_file):
         print('Error: File does not exists')
         exit()
 
+
 def create_optional_dir(dest, dir_name):
     """ Creates and Returns optional sub folder"""
     opt_folder = path.join(dest, dir_name)
@@ -49,10 +49,3 @@ def create_config_dir(dest_dir):
         makedirs(dest)
 
     return dest;
-
-
-if not len(args):
-    print('Requires path to config file as an argument')
-else:
-    export_configs()
-
