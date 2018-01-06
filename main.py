@@ -15,28 +15,41 @@ def is_select_menu(args):
     return "--select-menu" in args or "-s" in args
 
 
+def is_add_config(args):
+    return "--add" in args or "-a" in args
+
+
 def has_config_path(args):
-    return "--path" in args or "-p" in args
+    return "--config" in args or "-c" in args
 
 
-def get_config_path(args):
+def get_option_value(args, option_value_codes):
+    """option_value_codes [short_option, long_option]"""
     for x in args:
-        if x[0] == "-p" or x[0] == "--path":
+        if x[0] == option_value_codes[0] or x[0] == option_value_codes[1]:
             if len(x[1]):
                 return x[1]
             else: 
-                print("Invalid path parameter")
+                print("Invalid option value")
                 exit()
 
 
 def has_required_options(args):
-    if is_export(args) and is_import(args):
-        print("Can not export and import at same time")
+    counter = 0
+    if is_export(args): counter += 1
+    if is_import(args): counter += 1
+    if is_add_config(args): counter += 1
+
+    if counter > 1: 
+        print("Can do only one of the following: --export, --import, --add")
         exit()
-        
-    if is_export(args) or is_import(args):
-        if has_config_path(args):
-            return True
+
+    if counter < 1:
+        print("Requires one of the following: --export, --import, --add")
+        exit()
+
+    if has_config_path(args):
+        return True
 
     return False
 
@@ -48,35 +61,39 @@ def get_option_codes(command_line_arguments):
 
 def process_args(args):
     if not len(args):
-        print("-i or -e and -p are required arguments")
+        print("-i or -e or -a plus -c are required arguments")
 
     short_opts, long_opts = get_option_definitions()
     try: 
         options = getopt.getopt(args, short_opts, long_opts) 
         option_codes = get_option_codes(options[0])
         required_options = has_required_options(option_codes)
-        config_path = get_config_path(options[0])
+        config_path = get_option_value(options[0], ["-c", "--config"])
         select_menu = is_select_menu(option_codes) 
         
         if required_options:
             if is_export(option_codes):
                 exporter.export_configs(config_path, select_menu)
-            else: 
+            elif is_import(option_codes): 
                 importer.import_configs(config_path, select_menu) 
+            elif is_add_config(option_codes):
+                new_config_file = get_option_value(options[0], ["-a", "--add"])
+                exporter.add_new_config(new_config_file, config_path, select_menu)
         else: 
-            print("-i or -e and -p are required arguments")
+            print("-i or -e or -a plus -c are required arguments")
     except getopt.GetoptError as err:
         print(err)
         exit()
         
 
 def get_option_definitions():
-    short_options = "iesp:"
+    short_options = "iea:sc:"
     long_options = [
                 "import",
                 "export",
+                "add=",
                 "select-menu",
-                "path="
+                "config="
             ]
 
     return short_options, long_options

@@ -1,18 +1,17 @@
 #!python3
 
 from sys import exit
-from pathlib import Path
 from shutil import copyfile
 from socket import gethostname
 from os import makedirs, path
-import json
+from lib import utils
 
 
 def import_configs(path_to_config_file, show_select_menu=False):
-    settings = get_config_file(path_to_config_file)
+    settings = utils.get_config_file(path_to_config_file)
     config_dir = settings['dest_dir']
     files_to_import = settings['colect_files']
-    home_folder = get_home()
+    home_folder = utils.get_home()
     current_config_dir = path.join(home_folder, config_dir, gethostname())
 
     if show_select_menu:
@@ -68,10 +67,6 @@ def valid_user_selection(user_selection, files_to_import):
     return True
 
 
-def get_home():
-    return str(Path.home())
-
-
 def import_single(conf, current_config_dir, home):
     print(conf[0] + " ..... ok")
     if len(conf) > 2:
@@ -80,12 +75,4 @@ def import_single(conf, current_config_dir, home):
     else:
         copyfile(path.join(current_config_dir, conf[1]), path.join( home, conf[0]))
 
-
-def get_config_file(path_to_file):
-    try:
-        with open(path_to_file) as f:
-            return json.load(f)
-    except FileNotFoundError as e:
-        print('Error: File does not exists')
-        exit()
 
