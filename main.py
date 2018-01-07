@@ -1,7 +1,9 @@
-#!python3
+#!/bin/python3
 from sys import argv, exit
 import getopt 
+from getpass import getuser
 from lib import exporter, importer
+import os
 
 def is_import(args):
     return "--import" in args or "-i" in args
@@ -33,6 +35,8 @@ def get_option_value(args, option_value_codes):
                 print("Invalid option value")
                 exit()
 
+    return None
+
 
 def has_required_options(args):
     counter = 0
@@ -59,6 +63,30 @@ def get_option_codes(command_line_arguments):
     return list(opts)
 
 
+def parse_home_path(curr_path):
+    if curr_path.find(getuser()) != -1 and not curr_path.startswith("~"):
+        curr_path = curr_path[curr_path.find(getuser()):] 
+        curr_path = curr_path[curr_path.find("/"):]
+        curr_path = "~" + curr_path
+
+    return curr_path
+
+
+def get_new_config_file_details(new_config_file):
+    offer_name = new_config_file.split("/")[-1]
+    name = input("name [Default " + offer_name + "]: ")
+    opt_dir = input("Sub directory [<Enter> for none]: ")
+    details = [new_config_file]
+
+    if not len(name): name = offer_name
+
+    details.append(name)
+
+    if len(opt_dir): details.append(opt_dir)
+
+    return details
+
+
 def process_args(args):
     if not len(args):
         print("-i or -e or -a plus -c are required arguments")
@@ -78,7 +106,16 @@ def process_args(args):
                 importer.import_configs(config_path, select_menu) 
             elif is_add_config(option_codes):
                 new_config_file = get_option_value(options[0], ["-a", "--add"])
-                exporter.add_new_config(new_config_file, config_path, select_menu)
+                new_config_file = os.path.join(os.getcwd(), new_config_file)
+
+                if not os.path.exists(new_config_file):
+                    print("Could not resolve a path to the file")
+                    exit()
+
+                new_config_file = parse_home_path(new_config_file)
+                config_details = get_new_config_file_details(new_config_file)
+
+                exporter.add_new_config(config_details, config_path, select_menu)
         else: 
             print("-i or -e or -a plus -c are required arguments")
     except getopt.GetoptError as err:

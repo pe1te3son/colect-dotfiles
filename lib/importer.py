@@ -9,11 +9,10 @@ from lib import utils
 
 def import_configs(path_to_config_file, show_select_menu=False):
     settings = utils.get_config_file(path_to_config_file)
-    config_dir = settings['dest_dir']
     files_to_import = settings['colect_files']
     home_folder = utils.get_home()
-    current_config_dir = path.join(home_folder, config_dir, gethostname())
-
+    current_config_dir = get_current_config_dir(settings)
+    
     if show_select_menu:
         menu_selection = print_select_menu(files_to_import)
 
@@ -21,11 +20,16 @@ def import_configs(path_to_config_file, show_select_menu=False):
             exit()
         elif type(menu_selection) is list:
             for idx in menu_selection:
-                import_single(files_to_import[idx], current_config_dir, home_folder)
+                import_single(files_to_import[idx], current_config_dir)
             return
 
     for conf in files_to_import:
-        import_single(conf, current_config_dir, home_folder)
+        import_single(conf, current_config_dir)
+
+
+def get_current_config_dir(settings):
+    config_dir = utils.parse_home_path(settings['dest_dir'])
+    return path.join(config_dir, gethostname())
 
 
 def print_select_menu(files_to_import):
@@ -67,12 +71,15 @@ def valid_user_selection(user_selection, files_to_import):
     return True
 
 
-def import_single(conf, current_config_dir, home):
-    print(conf[0] + " ..... ok")
+def import_single(conf, current_config_dir):
+    conf[0] = utils.parse_home_path(conf[0]) 
+
     if len(conf) > 2:
         opt_dir = path.join(current_config_dir, conf[2])
-        copyfile(path.join(opt_dir, conf[1]), path.join( home, conf[0]))
+        copyfile(path.join(opt_dir, conf[1]), conf[0])
     else:
-        copyfile(path.join(current_config_dir, conf[1]), path.join( home, conf[0]))
+        copyfile(path.join(current_config_dir, conf[1]), conf[0])
+
+    print(conf[0] + " ..... ok")
 
 
