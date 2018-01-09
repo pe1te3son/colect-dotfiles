@@ -33,9 +33,9 @@ def get_current_config_dir(settings):
 
 
 def print_select_menu(files_to_import):
-    print("Select files to import; example: 1,2,3\n")
+    print("\nSelect files to import; example: 1,2,3\n")
     for idx, val in enumerate(files_to_import):
-        print(str(idx + 1) + ". " + val[0])
+        print(str(idx + 1) + ": " + val[0])
     
     print("\n\t(a)ll\t(c)ancel\n")
     
@@ -73,13 +73,31 @@ def valid_user_selection(user_selection, files_to_import):
 
 def import_single(conf, current_config_dir):
     conf[0] = utils.parse_home_path(conf[0]) 
+    failed_to_copy = []
 
-    if len(conf) > 2:
-        opt_dir = path.join(current_config_dir, conf[2])
-        copyfile(path.join(opt_dir, conf[1]), conf[0])
-    else:
-        copyfile(path.join(current_config_dir, conf[1]), conf[0])
+    try:
+        if len(conf) > 2:
+            opt_dir = path.join(current_config_dir, conf[2])
+            copyfile(path.join(opt_dir, conf[1]), conf[0])
+        else:
+            copyfile(path.join(current_config_dir, conf[1]), conf[0])
 
-    print(conf[0] + " ..... ok")
+        print(conf[0] + " ..... ok")
+
+    except FileNotFoundError:
+        failed_to_copy.append(conf[0])
+        print(conf[0] + " ..... failed!")
+
+    if len(failed_to_copy):
+        print("\nPlease run export first")
+        print("Failed to import following:")
+        for failed_file in failed_to_copy:
+            print("\t1: " + failed_file)
+            
+
+
+
+
+
 
 
