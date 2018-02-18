@@ -2,6 +2,7 @@ from pathlib import Path
 import json
 from os import path
 
+
 def get_home():
     return str(Path.home())
 
