@@ -1,6 +1,7 @@
 #!python3
 
 from sys import exit
+import errno
 from shutil import copyfile
 from socket import gethostname
 from os import makedirs, path
@@ -10,9 +11,8 @@ from lib import utils
 def import_configs(path_to_config_file, show_select_menu=False):
     settings = utils.get_config_file(path_to_config_file)
     files_to_import = settings['colect_files']
-    home_folder = utils.get_home()
     current_config_dir = get_current_config_dir(settings)
-    
+
     if show_select_menu:
         menu_selection = print_select_menu(files_to_import)
 
@@ -36,9 +36,9 @@ def print_select_menu(files_to_import):
     print("\nSelect files to import; example: 1,2,3\n")
     for idx, val in enumerate(files_to_import):
         print(str(idx + 1) + ": " + val[0])
-    
+
     print("\n\t(a)ll\t(c)ancel\n")
-    
+
     user_selection = None
     while not valid_user_selection(user_selection, files_to_import):
         user_selection = input("select: ")
@@ -50,7 +50,7 @@ def parse_user_selection(user_selection):
     if user_selection == "a" or user_selection == "c":
         return user_selection
 
-    return [ int(x) - 1 for x in user_selection.split(",") ]
+    return [int(x) - 1 for x in user_selection.split(",")]
 
 
 def valid_user_selection(user_selection, files_to_import):
@@ -72,8 +72,15 @@ def valid_user_selection(user_selection, files_to_import):
 
 
 def import_single(conf, current_config_dir):
-    conf[0] = utils.parse_home_path(conf[0]) 
+    conf[0] = utils.parse_home_path(conf[0])
     failed_to_copy = []
+
+    if not path.exists(path.dirname(conf[0])):
+        try:
+            makedirs(path.dirname(conf[0]))
+        except OSError as exc:  # Guard against race condition
+            if exc.errno != errno.EEXIST:
+                raise
 
     try:
         if len(conf) > 2:
@@ -82,22 +89,13 @@ def import_single(conf, current_config_dir):
         else:
             copyfile(path.join(current_config_dir, conf[1]), conf[0])
 
-        print(conf[0] + " ..... ok")
+        print("[ OK ] " + conf[0])
 
     except FileNotFoundError:
         failed_to_copy.append(conf[0])
-        print(conf[0] + " ..... failed!")
+        print("[ FAILED! ] " + conf[0])
 
     if len(failed_to_copy):
-        print("\nPlease run export first")
         print("Failed to import following:")
         for failed_file in failed_to_copy:
             print("\t1: " + failed_file)
-            
-
-
-
-
-
-
-
